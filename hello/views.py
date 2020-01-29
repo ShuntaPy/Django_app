@@ -32,6 +32,7 @@ def create(request):
 
     return render(request, 'hello/create.html', params)
 
+
 def edit(request, num):
     obj = Friend.objects.get(id=num)
     if (request.method == 'POST'):
@@ -41,8 +42,23 @@ def edit(request, num):
 
     params = {
         'title': 'Hello',
-        'id':num,
+        'id': num,
         'form': FriendForm(instance=obj),
     }
 
     return render(request, 'hello/edit.html', params)
+
+
+def delete(request, num):
+    friend = Friend.objects.get(id=num)
+    if (request.method == 'POST'):
+        friend.delete()
+        return redirect(to='/hello')
+
+    params = {
+        'title': 'Hello',
+        'id': num,
+        'obj':friend,
+    }
+
+    return render(request, 'hello/delete.html', params)
