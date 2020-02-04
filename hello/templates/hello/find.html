@@ -10,6 +10,15 @@
 
 <body>
     <h1>{{title}}</h1>
+    <p>{{message|safe}}</p>
+    <table>
+        <form action="{% url 'find'  %}" method="post">
+        {% csrf_token %}
+        {{form}}
+        <tr><th></th><td><input type="submit" value="click"></td></tr>
+    </form>
+    </table>
+    <hr>
     <table>
         <tr>
             <th>data</th>
