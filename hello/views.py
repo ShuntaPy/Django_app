@@ -5,7 +5,7 @@ from .models import Friend
 #from .forms import HelloForm
 from .forms import FriendForm
 from .forms import FindForm
-
+from django.db.models import Q
 
 def index(request):
     data = Friend.objects.all()
@@ -69,7 +69,8 @@ def find(request):
         msg = 'search result:'
         form = FindForm(request.POST)
         str = request.POST['find']
-        data = Friend.objects.filter(name=str)
+        list = str.split()
+        data = Friend.objects.filter(name__in=list)
 
     else:
         msg = 'search words...'
