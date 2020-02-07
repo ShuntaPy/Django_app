@@ -5,12 +5,20 @@ from .models import Friend
 #from .forms import HelloForm
 from .forms import FriendForm
 from .forms import FindForm
-from django.db.models import Q
+from django.db.models import Count,Sum,Avg,Min,Max
 
 def index(request):
     data = Friend.objects.all()
+    re1 = Friend.objects.aggregate(Count('age'))
+    re2 = Friend.objects.aggregate(Sum('age'))
+    re3 = Friend.objects.aggregate(Avg('age'))
+    re4 = Friend.objects.aggregate(Min('age'))
+    re5 = Friend.objects.aggregate(Max('age'))
+    msg = 'count:' + str(re1['age__count']) + '<br>Sum:' + str(re2['age__sum']) + '<br>Average:' + str(re3['age__avg']) \
+        + '<br>Min:' + str(re4['age__min']) + '<br>Max:' + str(re5['age__max'])
     params = {
         'title': 'Hello',
+        'message':msg,
         'data': data,
     }
 
@@ -66,11 +74,12 @@ def delete(request, num):
 
 def find(request):
     if(request.method == 'POST'):
-        msg = 'search result:'
+        msg = request.POST['find']
         form = FindForm(request.POST)
-        str = request.POST['find']
-        list = str.split()
-        data = Friend.objects.filter(name__in=list)
+        sql = 'select * from hello_friend'
+        if(msg != ''):
+            sql += ' where ' + msg
+        data = Friend.objects.raw(sql)
 
     else:
         msg = 'search words...'
