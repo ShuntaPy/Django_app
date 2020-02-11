@@ -7,20 +7,17 @@ from .forms import FriendForm
 from .forms import FindForm
 from django.db.models import Count,Sum,Avg,Min,Max
 from .forms import CheckForm
+from django.core .paginator import Paginator
+from .models import Friend, Message
+from .forms import FriendForm, MessageForm
 
-def index(request):
+def index(request, num=1):
     data = Friend.objects.all()
-    re1 = Friend.objects.aggregate(Count('age'))
-    re2 = Friend.objects.aggregate(Sum('age'))
-    re3 = Friend.objects.aggregate(Avg('age'))
-    re4 = Friend.objects.aggregate(Min('age'))
-    re5 = Friend.objects.aggregate(Max('age'))
-    msg = 'count:' + str(re1['age__count']) + '<br>Sum:' + str(re2['age__sum']) + '<br>Average:' + str(re3['age__avg']) \
-        + '<br>Min:' + str(re4['age__min']) + '<br>Max:' + str(re5['age__max'])
+    page = Paginator(data,3)
     params = {
         'title': 'Hello',
-        'message':msg,
-        'data': data,
+        'message':'',
+        'data': page.get_page(num),
     }
 
     return render(request, 'hello/index.html', params)
@@ -100,14 +97,30 @@ def check(request):
     params = {
         'title': 'Hello',
         'message': 'check validation',
-        'form': CheckForm(),
+        'form': FriendForm(),
     }
-    if(request.method == 'POST'):
-        form = CheckForm(request.POST)
+    if (request.method == 'POST'):
+        obj = Friend()
+        form = FriendForm(request.POST, instance=obj)
         params['form'] = form
         if (form.is_valid()):
             params['message']='OK!'
         else:
             params['message']='no good.'
 
-    return render(request, 'hello/check.html', params)            
+    return render(request, 'hello/check.html', params)         
+
+def message(request, page=1):
+    if (request.method == 'POST'):
+        obj  = Message()
+        form = MessageForm(request.POST, instance=obj)
+        form.save()
+    data = Message.objects.all().reverse()
+    paginator = Paginator(data, 5)
+    params = {
+        'title': 'Message',
+        'form': MessageForm(),
+        'data': paginator.get_page(page),
+    }          
+
+    return render(request, 'hello/message.html',params)

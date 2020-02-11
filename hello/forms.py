@@ -1,5 +1,7 @@
 from django import forms
 from.models import Friend
+from django import forms
+from.models import Friend, Message
 
 
 class FriendForm(forms.ModelForm):
@@ -11,6 +13,15 @@ class FindForm(forms.Form):
     find = forms.CharField(label='Find', required=False)
 
 class CheckForm(forms.Form):
-    empty = forms.CharField(label='Empty', empty_value=True)
-    min = forms.CharField(label='Min' ,min_length=10)
-    max = forms.CharField(label='Max' ,max_length=10)
+    str = forms.CharField(label='String')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        str = cleaned_data['str']
+        if (str.lower().startswith('no')):
+            raise forms.ValidationError('You input "NO"! ')
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['title','content','friend']

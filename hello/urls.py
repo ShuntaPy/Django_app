@@ -8,4 +8,7 @@ urlpatterns = [
     path('delete/<int:num>', views.delete, name='delete'),
     path('find', views.find, name='find'),
     path('check',views.check, name='check'),
+    path('<int:num>',views.index, name='index'),
+    path('message/', views.message, name='message'),
+    path('message/<int:page>', views.message, name='mwssage'),
 ]
